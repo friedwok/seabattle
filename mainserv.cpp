@@ -1,4 +1,3 @@
-//server
 #include<cstdio>
 #include<cstring>
 #include<sys/socket.h>
