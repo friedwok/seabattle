@@ -6,6 +6,8 @@
 #include<sys/types.h>
 #include<unistd.h>
 #include "game_info.h"
+#include "handler.h"
+
 
 struct field_info field;
 
@@ -19,7 +21,7 @@ int main(int argc, char **argv)
 	struct sockaddr_in addr;
 	struct sockaddr addr_for_accept;
 	socklen_t addrlen = sizeof(struct sockaddr);
-	struct clientlist *head = NULL, *tmp, *last;
+	clients *head = NULL, *tmp, *last;
 
 	if(argc < 2) {
 		fprintf(stderr, "Program has one argument - number of port\n");
@@ -40,6 +42,7 @@ int main(int argc, char **argv)
 		perror("socket");
 		exit(1);
 	}
+
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -47,6 +50,11 @@ int main(int argc, char **argv)
 	setsockopt(ls, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	if(0 != bind(ls, (struct sockaddr*)&addr, sizeof(addr))) {
 		perror("bind");
+		exit(1);
+	}
+
+	if(-1 == listen(ls, 5)) {
+		perror("listen");
 		exit(1);
 	}
 
@@ -85,7 +93,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			field.players_connected++;
-			//handle(accepted_player(head, &last, &field, dscr_came);
+			handle_accepted_player(head, &last, &field, dscr_came);
 		}
 
 		//now iterate through all client descriptors

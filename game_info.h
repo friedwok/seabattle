@@ -5,6 +5,7 @@ extern int game_started;
 
 typedef struct clientlist {
 	int dscr;
+	int player_num;
 	struct clientlist *next;
 } clients;
 
