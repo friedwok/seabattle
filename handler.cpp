@@ -1,3 +1,7 @@
+/* format while filling the field
+	example of a ship 3 cells long - C3C5
+*/
+
 #include<stdio.h>
 #include<cstdlib>
 #include "game_info.h"
@@ -25,6 +29,7 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 	printf("zxcsa\n");
 	int buf[2];
 	clients *tmp;
+	const char *message1 = "The game has not started yet\n";
 
 	if(field->players_connected == field->players_count) {
 			game_started = 1;
@@ -46,5 +51,34 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		(*last)->next = tmp;
 		(*last) = (*last)->next;
 		alarm_players(field);
+	}
+
+	if(!game_started) {
+		write(fd, message1, strlen(message1)+1);
+		return;
+	}
+}
+
+void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
+{
+	clients *tmp = field->head, *tmp1;
+
+	if(!rs) {
+		while(tmp->next->dscr != fd) {
+			tmp = tmp->next;
+		}
+		tmp1 = tmp->next;
+		tmp->next = tmp->next->next;
+		notify_players_about_disconnect(field, tmp1);
+		free(tmp1);
+		shutdown(fd, 2);
+		close(fd);
+		(field->players_connected)--;
+	}
+
+	switch(game_started) {
+		case 1 : put_ship_to_field(tmp_buffer, rs, fd, field); break;
+		case 2 : hit_the_ship(tmp_buffer, rs, fd, field); break;
+		default: break;
 	}
 }

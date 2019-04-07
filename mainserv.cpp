@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 					exit(1);
 				}
 				tmp_buffer[rs] = '\0';
-				//handle(tmp_buffer, rs, fd, &field);
+				handle(tmp_buffer, rs, fd, &field);
 				if(tmp->next == NULL)
 					break;
 				//here should be func for if player alone - win
