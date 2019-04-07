@@ -22,13 +22,14 @@ void alarm_players(struct field_info *field)
 
 void handle_accepted_player(clients *head, clients **last, struct field_info *field, int dscr)
 {
+	printf("zxcsa\n");
 	int buf[2];
 	clients *tmp;
 
 	if(field->players_connected == field->players_count) {
 			game_started = 1;
 	}
-
+	printf("jopf\n");
 	if(field->players_connected > field->players_count) {
 		buf[0] = field->players_connected;
 		buf[1] = field->players_count;
@@ -40,9 +41,10 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		tmp = new clients;;
 		tmp->player_num = field->players_connected;
 		tmp->dscr = dscr;
+		tmp->next = NULL;
 		printf("plnum = %d\n", tmp->player_num);
 		(*last)->next = tmp;
-		(*last) =(*last)->next;
+		(*last) = (*last)->next;
 		alarm_players(field);
 	}
 }

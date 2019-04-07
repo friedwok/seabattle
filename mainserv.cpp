@@ -61,6 +61,7 @@ int main(int argc, char **argv)
 	head = new clients;
 	head->next = NULL;
 	last = head;
+	tmp = head;
 	field.head = head;
 
 	for(;;) {
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
 		int max_d = ls;
 		//clear the set
 		FD_ZERO(&readfds);
+		FD_SET(ls, &readfds);
 		int fd;
 		//do a cycle on client sockets
 		tmp = head;
@@ -76,15 +78,17 @@ int main(int argc, char **argv)
 			//fd - import regular client descriptor
 			fd = tmp->next->dscr;
 			FD_SET(fd, &readfds);
+			printf("cycl\n");
 			//checking maximum
 			if(fd > max_d)
 				max_d = fd;
 		}
-
+		printf("preselect\n");
 		int res = select(max_d+1, &readfds, NULL, NULL, NULL);
 		if(res < 1) {
 			perror("select");
 		}
+		printf("afterselect\n");
 
 		if(FD_ISSET(ls, &readfds)) {
 			dscr_came = accept(ls, &addr_for_accept, &addrlen);
@@ -93,6 +97,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			field.players_connected++;
+			printf("prehan\n");
 			handle_accepted_player(head, &last, &field, dscr_came);
 		}
 

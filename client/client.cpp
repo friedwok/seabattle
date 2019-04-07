@@ -51,7 +51,6 @@ int main(int argc, char **argv)
 
 	ls = socket(AF_INET, SOCK_STREAM, 0);
 
-	port = 8080;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	if(!inet_aton(serv_ip, &(addr.sin_addr))) {
@@ -66,6 +65,7 @@ int main(int argc, char **argv)
 	printf("Connection established\n");
 	pre_game(ls, &player_number, &fl);
 	printf("Your number is %d\n", player_number);
-	start_the_game(ls, fl);
+	//start_the_game(ls, fl);
+	sleep(60);
 	return 0;
 }

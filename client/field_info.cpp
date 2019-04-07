@@ -13,7 +13,7 @@ public:
 		}
 	}
 
-	void add_ship(Ship& ship);
+	//void add_ship(Ship& ship);
 };
 
 class Ship {
