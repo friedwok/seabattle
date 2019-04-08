@@ -121,8 +121,13 @@ void make_command_to_send(char *buf, int size, int ls)
 		printf("Invalid command\n");
 		remake_command(buf, size, ls);
 		return;
+	} else if((msg_send[0] != msg_send[2])&&(msg_send[1] != msg_send[3])) {
+		printf("The ship can only stand parallel to the axes\n");
+		remake_command(buf, size, ls);
+	//} else if(check_other)) { length, crossing, back to back
 	} else {
-		write(ls, msg_send, sizeof(msg_send));
+		put_ship_to_field(msg_send, 
+		write(ls, msg_send, sizeof(msg_send)):
 	}
 }
 
