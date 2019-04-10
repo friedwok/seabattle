@@ -1,8 +1,5 @@
-#ifndef FIELD_INFO_H_SENTRY
-#define FIELD_INFO_H_SENTRY
-
-#define F_LENGTH 10
-#define F_WIDTH 10
+#include<stdio.h>
+#include "field_info.h"
 
 class Field {
 	int f_info[F_LENGTH][F_WIDTH];
@@ -16,8 +13,18 @@ public:
 		}
 	}
 
-	//void add_ship(Ship& ship);
+	void put_ship_to_field(char *msg_send);
+	void add_ship(Ship& ship);
 };
+
+Field::put_ship_to_field(char *msg_send)
+{
+	
+}
+
+Field::add_ship(char *msg)
+{
+}
 
 class Ship {
 	static int size;
@@ -98,5 +105,3 @@ public:
 		y2 = y2_w;
 	}
 };
-
-#endif
