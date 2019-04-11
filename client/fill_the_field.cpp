@@ -13,6 +13,8 @@ struct ships_num {
 	int ships1;
 };
 
+Field field;
+
 const char msg4[64] = "Enter the coordinates of the ships of 4 cells\n";
 const char msg3[64] = "Enter the coordinates of the ships of 3 cells\n";
 const char msg2[64] = "Enter the coordinates of the ships the size of two cells\n";
@@ -126,7 +128,7 @@ void make_command_to_send(char *buf, int size, int ls)
 		remake_command(buf, size, ls);
 	//} else if(check_other)) { length, crossing, back to back
 	} else {
-		put_ship_to_field(msg_send, 
+		field.put_ship_to_field(msg_send); 
 		write(ls, msg_send, sizeof(msg_send)):
 	}
 }
@@ -136,7 +138,8 @@ void handle_buf_servin(State *st, struct ships_num *ships, char *buf_for_servin)
 	if(buf_for_servin[0]) {
 		switch(*st) {
 			case four:
-				ships->ships4++;
+				//ships->ships4++;
+				
 				*st = three;
 				break;
 			case three:
