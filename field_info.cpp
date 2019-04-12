@@ -13,18 +13,18 @@ public:
 		}
 	}
 
-	void put_ship_to_field(char *msg_send);
-	void add_ship(Ship& ship);
+	//void put_ship_to_field(char *msg_send);
+	//void add_ship(Ship& ship);
 };
 
-Field::put_ship_to_field(char *msg_send)
-{
-	
-}
+//field::put_ship_to_field(char *msg_send)
+//{
+//	
+//}
 
-Field::add_ship(char *msg)
-{
-}
+//Field::add_ship(char *msg)
+//{
+//}
 
 class Ship {
 	static int size;

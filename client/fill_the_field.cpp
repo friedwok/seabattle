@@ -3,7 +3,7 @@
 #include<sys/types.h>
 #include<unistd.h>
 #include<cctype>
-//#include "protocol.h"
+#include "field_info.h"
 #include "fill_the_field.h"
 
 struct ships_num {
@@ -119,6 +119,7 @@ void make_command_to_send(char *buf, int size, int ls)
 		}
 	}
 
+	printf("msgsend = %s\n", msg_send);
 	if((words_count != 2)||(sym_count != 4)) {
 		printf("Invalid command\n");
 		remake_command(buf, size, ls);
@@ -129,7 +130,7 @@ void make_command_to_send(char *buf, int size, int ls)
 	//} else if(check_other)) { length, crossing, back to back
 	} else {
 		field.put_ship_to_field(msg_send); 
-		write(ls, msg_send, sizeof(msg_send)):
+		//write(ls, msg_send, sizeof(msg_send));
 	}
 }
 
@@ -138,8 +139,7 @@ void handle_buf_servin(State *st, struct ships_num *ships, char *buf_for_servin)
 	if(buf_for_servin[0]) {
 		switch(*st) {
 			case four:
-				//ships->ships4++;
-				
+				ships->ships4++;
 				*st = three;
 				break;
 			case three:

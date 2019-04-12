@@ -1,77 +1,49 @@
-#ifndef FIELD_INFO_H_SENTRY
-#define FIELD_INFO_H_SENTRY
-
 #include<stdio.h>
 #include<cstdlib>
-#define F_LENGTH 10
-#define F_WIDTH 10
+#include<time.h>
+#include "field_info.h"
 
-class Field;
+//class Field;
 
-class Ship {
-	int size;
-	int x1, y1;
-	int x2, y2;
-public:
-	Ship(const char *msg)
-	{
-		x1 = msg[0] - 'A';
-		y1 = msg[1] - '1';
-		x2 = msg[2] - 'A';
-		y2 = msg[3] - '1';
-		if(x1 == x2) {
-			size = abs(y2 - y1);
-		} else {
-			size = abs(x2 - x1);
+Ship::Ship(const char *msg)
+{
+	x1 = msg[0] - 'A';
+	y1 = msg[1] - '1';
+	x2 = msg[2] - 'A';
+	y2 = msg[3] - '1';
+	if(x1 == x2) {
+		size = abs(y2 - y1);
+	} else {
+		size = abs(x2 - x1);
+	}
+}
+
+Field::Field()
+{
+	for(int i = 0; i < F_LENGTH; i++) {
+		for(int j = 0; j < F_WIDTH; j++) {
+			f_info[i][j] = 0;
 		}
 	}
-	friend class Field;
-};
 
-class Field {
-	int f_info[F_LENGTH][F_WIDTH];
-	struct Ships {
-		Ship *ship;
-		Ships *next;
-	};
-	struct Ships_count {
-		int ships4;
-		int ships3;
-		int ships2;
-		int ships1;
-	};
-public:
-	Ships *first, *last;
-	struct Ships_count s_count;
+	first = NULL;
+	last = NULL;
+	s_count.ships4 = 0;
+	s_count.ships3 = 0;
+	s_count.ships2 = 0;
+	s_count.ships1 = 0;
+}
 
-	Field()
-	{
-		for(int i = 0; i < F_LENGTH; i++) {
-			for(int j = 0; j < F_WIDTH; j++) {
-				f_info[i][j] = 0;
-			}
-		}
-
-		first = NULL;
-		last = NULL;
-		s_count.ships4 = 0;
-		s_count.ships3 = 0;
-		s_count.ships2 = 0;
-		s_count.ships1 = 0;
+Field::~Field()
+{
+	Ships *tmp;
+	while(first != NULL) {
+		tmp = first;
+		first = first->next;
+		delete tmp->ship;
+		delete tmp;
 	}
-
-	void put_ship_to_field(const char *msg);
-
-	~Field()
-	{
-		Ships *tmp;
-		while(first != NULL) {
-			tmp = first;
-			first = first->next;
-			delete tmp;
-		}
-	}
-};
+}
 
 void Field::put_ship_to_field(const char *msg)
 {
@@ -101,4 +73,62 @@ void Field::put_ship_to_field(const char *msg)
 	}
 }
 
-#endif
+void Field::field_print()
+{
+	char *str1, *str2;
+	const int offset = 4;
+
+	srand(time(NULL));
+	str1 = new char[offset + 41];
+	str2 = new char[offset + 41];
+	str1[offset + 40] = 0;
+	str2[offset + 40] = 0;
+	for(int j = 0; j < 11; j++) {
+		for(int i = 0; i < offset + 41; i++) {
+			if(i >= offset) {
+				if(j > 0) {
+					if(i % 4 == 0) {
+						str1[i] = '+';
+						str2[i] = '|';
+					} else {
+						str1[i] = '-';
+						str2[i] = ' ';
+						if((i - offset) % 4 == 2) {
+							f_info[(i-offset)/4][j-1] == 1 ? str2[i] = '.' : str2[i] = ' ';
+						}
+					}
+				} else {
+					if((i-2) % 4 == 0) {
+						str2[i] = 'A' + (i-2)/4 - 1;
+					} else if(i % 4 == 0) {
+						str2[i] = '|';
+					} else {
+						str2[i] = ' ';
+					}
+					str1[i] = ' ';
+				}
+		
+			} else {
+				if(j > 0) {
+					if((i+2) % 4 == 0) {
+						str1[i] = '-';
+						str2[i] = '0' + i;
+					} else {
+						str1[i] = '-';
+						str2[i] = ' ';
+					}
+				} else {
+					str1[i] = ' ';
+					str2[i] = ' ';
+				}
+				if(j == 10) {
+					str2[1] = '1';
+					str2[2] = '0';
+				}
+			}
+		}
+		printf("%s\n", str1);
+		printf("%s\n", str2);
+	}
+	printf("%s\n", str1);
+}

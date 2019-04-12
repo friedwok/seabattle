@@ -4,6 +4,7 @@
 
 #include<stdio.h>
 #include<cstdlib>
+#include<cstring>
 #include "game_info.h"
 #include "handler.h"
 #include<sys/socket.h>
@@ -20,7 +21,9 @@ void alarm_players(struct field_info *field)
 	while(tmp->next != NULL) {
 		write(tmp->next->dscr, buf, sizeof(buf));
 		tmp = tmp->next;
+		printf("alarm\n");
 	}
+	//printf("alarm\n");
 }
 
 
@@ -29,7 +32,7 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 	printf("zxcsa\n");
 	int buf[2];
 	clients *tmp;
-	const char *message1 = "The game has not started yet\n";
+	//const char *message1 = "The game has not started yet\n";
 
 	if(field->players_connected == field->players_count) {
 			game_started = 1;
@@ -53,10 +56,10 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		alarm_players(field);
 	}
 
-	if(!game_started) {
-		write(fd, message1, strlen(message1)+1);
-		return;
-	}
+	//if(!game_started) {
+	//	write(dscr, message1, strlen(message1)+1);
+	//	return;
+	//}
 }
 
 void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
@@ -69,7 +72,7 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
 		}
 		tmp1 = tmp->next;
 		tmp->next = tmp->next->next;
-		notify_players_about_disconnect(field, tmp1);
+		//notify_players_about_disconnect(field, tmp1);
 		free(tmp1);
 		shutdown(fd, 2);
 		close(fd);
@@ -77,8 +80,8 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
 	}
 
 	switch(game_started) {
-		case 1 : put_ship_to_field(tmp_buffer, rs, fd, field); break;
-		case 2 : hit_the_ship(tmp_buffer, rs, fd, field); break;
+		//case 1 : put_ship_to_field(tmp_buffer, rs, fd, field); break;
+		//case 2 : hit_the_ship(tmp_buffer, rs, fd, field); break;
 		default: break;
 	}
 }
