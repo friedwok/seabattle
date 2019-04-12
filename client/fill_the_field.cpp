@@ -130,7 +130,7 @@ void make_command_to_send(char *buf, int size, int ls)
 	//} else if(check_other)) { length, crossing, back to back
 	} else {
 		field.put_ship_to_field(msg_send); 
-		//write(ls, msg_send, sizeof(msg_send));
+		write(ls, msg_send, sizeof(msg_send));
 	}
 }
 

@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			field.players_connected++;
-			printf("prehan\n");
+			printf("prehan = %d\n", field.players_connected);
 			handle_accepted_player(head, &last, &field, dscr_came);
 		}
 
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 					exit(1);
 				}
 				tmp_buffer[rs] = '\0';
-				//handle(tmp_buffer, rs, fd, &field);
+				handle(tmp_buffer, rs, fd, &field, &last);
 				if(tmp->next == NULL)
 					break;
 				//here should be func for if player alone - win

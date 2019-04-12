@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	printf("Connection established\n");
 	pre_game(ls, &player_number, &fl);
 	printf("Your number is %d\n", player_number);
-	//start_the_game(ls, fl);
-	sleep(60);
+	start_the_game(ls, fl);
+	//sleep(60);
 	return 0;
 }

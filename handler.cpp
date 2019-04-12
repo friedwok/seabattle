@@ -10,6 +10,26 @@
 #include<sys/socket.h>
 #include<unistd.h>
 
+void notify_players_about_disconnect(struct field_info *field, clients *disc_pl)
+{
+	clients *tmp = field->head;
+	int buf[2];
+
+	printf("con = %d\n", field->players_connected);
+	if(field->players_connected == 0) {
+		printf("All disconnected\n");
+		return;
+	}
+	if(!game_started) {
+		buf[0] = field->players_connected;
+		buf[1] = field->players_count;
+		while(tmp->next != NULL) {
+			tmp = tmp->next;
+			write(tmp->dscr, buf, sizeof(buf));
+		}
+	}
+}
+
 void alarm_players(struct field_info *field)
 {
 	clients *tmp;
@@ -56,13 +76,18 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		alarm_players(field);
 	}
 
+	tmp = head;
+	while(tmp->next != NULL) {
+		printf("ds_connected = %d\n", tmp->next->dscr);
+		tmp = tmp->next;
+	}
 	//if(!game_started) {
 	//	write(dscr, message1, strlen(message1)+1);
 	//	return;
 	//}
 }
 
-void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
+void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients **last)
 {
 	clients *tmp = field->head, *tmp1;
 
@@ -72,11 +97,16 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field)
 		}
 		tmp1 = tmp->next;
 		tmp->next = tmp->next->next;
-		//notify_players_about_disconnect(field, tmp1);
+		field->players_connected--;
+		notify_players_about_disconnect(field, tmp1);
+		if(tmp->next == NULL) {
+			*last = tmp;
+		}
 		free(tmp1);
 		shutdown(fd, 2);
 		close(fd);
-		(field->players_connected)--;
+		return;
+		//(field->players_connected)--;
 	}
 
 	switch(game_started) {
