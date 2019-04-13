@@ -6,6 +6,7 @@
 #include<cstdlib>
 #include<ctype.h>
 #include "pregame.h"
+#include "startgame.h"
 #include<unistd.h>
 
 int main(int argc, char **argv)

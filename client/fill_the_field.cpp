@@ -20,18 +20,19 @@ const char msg3[64] = "Enter the coordinates of the ships of 3 cells\n";
 const char msg2[64] = "Enter the coordinates of the ships the size of two cells\n";
 const char msg1[64] = "Enter the coordinates of the ships the size of one cell\n";
 const char msg[64] = "For example: B4 E4\n";
+State st = four;
 
 void make_fleet(int ls)
 {
-	State st = four;
+	//State st = four;
 	fd_set readfds;
 	int r = 0;
-	struct ships_num ships = { .ships4 = 1, .ships3 = 2, .ships2 = 3, .ships1 = 4 };
+	struct ships_num ships = { .ships4 = 0, .ships3 = 0, .ships2 = 0, .ships1 = 0 };
 	char buf_for_stdin[256];
 	char buf_for_servin[256];
 
 	while(st != end) {
-		print_invite(st);
+		print_invite();
 		FD_ZERO(&readfds);
 		FD_SET(0, &readfds);
 		FD_SET(ls, &readfds);
@@ -42,6 +43,7 @@ void make_fleet(int ls)
 				perror("read");
 				exit(1);
 			}
+			printf("r = %d\n", r);
 			buf_for_stdin[r] = 0;
 			make_command_to_send(buf_for_stdin, sizeof(buf_for_stdin), ls);
 		}
@@ -58,12 +60,12 @@ void make_fleet(int ls)
 				exit(0);
 			}
 			printf("%s", buf_for_servin + 1);
-			handle_buf_servin(&st, &ships, buf_for_servin);
+			handle_buf_servin(&ships, buf_for_servin);
 		}
 	}
 }
 
-void print_invite(State st)
+void print_invite()
 {
 	switch(st)
 	{
@@ -101,7 +103,7 @@ void make_command_to_send(char *buf, int size, int ls)
 
 	msg_send[4] = 0;
 	for(int i = 0; i < size; i++) {
-		if((!std::isspace(buf[i]))&&(!fl)) {
+		if((!std::isspace(buf[i]))&&(!fl)&&(buf[i] != 0)) {
 			words_count++;
 			fl = 1;
 		} else if(std::isspace(buf[i])) {
@@ -110,6 +112,9 @@ void make_command_to_send(char *buf, int size, int ls)
 
 		if(!std::isspace(buf[i])) {
 			msg_send[sym_count] = buf[i];
+			printf("%c\n", buf[i]);
+			if(msg_send[sym_count] == 0)
+				break;
 			sym_count++;
 			if(sym_count > 4) {
 				printf("Invalid command\n");
@@ -120,7 +125,7 @@ void make_command_to_send(char *buf, int size, int ls)
 	}
 
 	printf("msgsend = %s\n", msg_send);
-	if((words_count != 2)||(sym_count != 4)) {
+	/*if((words_count != 2)||(sym_count != 4)) {
 		printf("Invalid command\n");
 		remake_command(buf, size, ls);
 		return;
@@ -131,33 +136,99 @@ void make_command_to_send(char *buf, int size, int ls)
 	} else {
 		field.put_ship_to_field(msg_send); 
 		write(ls, msg_send, sizeof(msg_send));
+	}*/
+	if(check_message(buf, size, msg_send, ls, words_count, sym_count)) {
+		return;
+	} else {
+		field.put_ship_to_field(msg_send);
+		write(ls, msg_send, sizeof(msg_send));
 	}
 }
 
-void handle_buf_servin(State *st, struct ships_num *ships, char *buf_for_servin)
+int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_count, int sym_count)
 {
+	int k = 0;
+	if((words_count != 2)||(sym_count != 4)) {
+		printf("Invalid command\n");
+		//remake_command(buf, size_buf, ls);
+		//return 1;
+	} else if((msg_send[0] != msg_send[2])&&(msg_send[1] != msg_send[3])) {
+		printf("The ship can only stand parallel to the axes");
+		//remake_command(buf, size_buf, ls);
+		//return 1;
+	} else if(check_length(msg_send)) {
+		printf("Wrong length\n");
+		//remake_command(buf, size_buf, ls);
+		//return 1;
+	} else {
+		k = 1;
+	}
+
+	if(!k) {
+		print_invite();
+		remake_command(buf, size_buf, ls);
+		return 1;
+	}
+	return 0;
+}
+
+int check_length(char *msg_send)
+{
+	int length;
+	int state = static_cast<int>(st);
+	if(msg_send[0] == msg_send[2]) {
+		length = abs(msg_send[3] - msg_send[1]) + 1;
+	} else {
+		length = abs(msg_send[2] - msg_send[0]) + 1;
+	}
+
+	if(length != state)
+		return 1;
+
+	
+	/*switch(st) {
+		case four:
+			length == 4 ? break : return 1;
+		case three:
+			length == 3 ? break : return 1;
+		case two:
+			length == 2 ? break : return 1;
+		case one:
+			length == 1 ? break : return 1;
+			
+	}*/
+	return 0;
+}
+
+void handle_buf_servin(struct ships_num *ships, char *buf_for_servin)
+{
+	printf("servin\n");
 	if(buf_for_servin[0]) {
-		switch(*st) {
+		switch(st) {
 			case four:
 				ships->ships4++;
-				*st = three;
+				st = three;
+				printf("four = %d\n", ships->ships4);
 				break;
 			case three:
 				ships->ships3++;
+				printf("three = %d\n", ships->ships3);
 				if(ships->ships3 == 2)
-					*st = two;
+					st = two;
 				break;
 			case two:
 				ships->ships2++;
 				if(ships->ships2 == 3)
-					*st = one;
+					st = one;
 				break;
 			case one:
 				ships->ships1++;
 				if(ships->ships1 == 4)
-					*st = end;
+					st = end;
 			default:
 				break;
 		}
 	}
+	//printf("Ship is installed\n");
+	field.field_print();
 }

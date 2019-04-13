@@ -8,13 +8,13 @@
 Ship::Ship(const char *msg)
 {
 	x1 = msg[0] - 'A';
-	y1 = msg[1] - '1';
+	y1 = msg[1] - '0';
 	x2 = msg[2] - 'A';
-	y2 = msg[3] - '1';
+	y2 = msg[3] - '0';
 	if(x1 == x2) {
-		size = abs(y2 - y1);
+		size = abs(y2 - y1) + 1;
 	} else {
-		size = abs(x2 - x1);
+		size = abs(x2 - x1) + 1;
 	}
 }
 
@@ -112,7 +112,7 @@ void Field::field_print()
 				if(j > 0) {
 					if((i+2) % 4 == 0) {
 						str1[i] = '-';
-						str2[i] = '0' + i;
+						str2[i] = '0' + j - 1;
 					} else {
 						str1[i] = '-';
 						str2[i] = ' ';
@@ -121,10 +121,10 @@ void Field::field_print()
 					str1[i] = ' ';
 					str2[i] = ' ';
 				}
-				if(j == 10) {
-					str2[1] = '1';
-					str2[2] = '0';
-				}
+				//if(j == 10) {
+				//	str2[1] = '1';
+				//	str2[2] = '0';
+				//}
 			}
 		}
 		printf("%s\n", str1);

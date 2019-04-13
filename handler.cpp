@@ -9,6 +9,7 @@
 #include "handler.h"
 #include<sys/socket.h>
 #include<unistd.h>
+#include "field_info.h"
 
 void notify_players_about_disconnect(struct field_info *field, clients *disc_pl)
 {
@@ -69,6 +70,8 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		tmp = new clients;;
 		tmp->player_num = field->players_connected;
 		tmp->dscr = dscr;
+		tmp->my_field = new Field;
+		tmp->enemy_field = new Field;
 		tmp->next = NULL;
 		printf("plnum = %d\n", tmp->player_num);
 		(*last)->next = tmp;
@@ -106,12 +109,28 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients 
 		shutdown(fd, 2);
 		close(fd);
 		return;
-		//(field->players_connected)--;
 	}
 
 	switch(game_started) {
-		//case 1 : put_ship_to_field(tmp_buffer, rs, fd, field); break;
+		case 1 : add_ship(tmp_buffer, rs, fd, field); break;
 		//case 2 : hit_the_ship(tmp_buffer, rs, fd, field); break;
 		default: break;
 	}
+}
+
+void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field)
+{
+	clients *tmp = field->head;
+	const char msg[128] = "1Ship is installed\n";
+
+	while(tmp->next->dscr != fd) {
+		if(tmp->next == NULL) {
+			printf("no descriptor in list\n");
+			exit(0);
+		}
+		tmp = tmp->next;
+	}
+	tmp->next->my_field->put_ship_to_field(tmp_buffer);
+	tmp->next->my_field->field_print();
+	write(fd, msg, sizeof(msg));
 }
