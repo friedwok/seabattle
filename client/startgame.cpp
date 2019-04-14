@@ -10,7 +10,7 @@ void start_the_game(int ls, int& fl)
 	fd_set readfds;
 	int r = 0;
 	char buffer_for_stdin[128];
-	//char buffer_for_servin[256];
+	char buffer_for_servin[256];
 
 	if(fl == 2)
 		exit(0);
@@ -30,7 +30,15 @@ void start_the_game(int ls, int& fl)
 			}
 			buffer_for_stdin[r] = 0;
 			//make_command_to_send(buffer_for_stdin, sizeof(buffer_for_stdin), ls);
-			
+		}
+		if(FD_ISSET(ls, &readfds)) {
+			r = read(0, buffer_for_servin, sizeof(buffer_for_servin)-1);
+			if(r == -1) {
+				perror("read");
+				exit(1);
+			}
+			buffer_for_stdin[r] = 0;
+			//handler
 		}
 	}
 }

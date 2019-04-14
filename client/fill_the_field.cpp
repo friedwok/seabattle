@@ -45,7 +45,11 @@ void make_fleet(int ls)
 			}
 			printf("r = %d\n", r);
 			buf_for_stdin[r] = 0;
-			make_command_to_send(buf_for_stdin, sizeof(buf_for_stdin), ls);
+			if(st != waiting) {
+				make_command_to_send(buf_for_stdin, sizeof(buf_for_stdin), ls);
+			} else {
+				printf("Not all players are ready\n");
+			}
 		}
 
 		if(FD_ISSET(ls, &readfds)) {
@@ -160,6 +164,8 @@ int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_cou
 		printf("Wrong length\n");
 		//remake_command(buf, size_buf, ls);
 		//return 1;
+	} else if(check_crossing_and_back(msg_send)) {
+		printf("The ship must not cross another or stay back to back\n");
 	} else {
 		k = 1;
 	}
@@ -175,14 +181,14 @@ int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_cou
 int check_length(char *msg_send)
 {
 	int length;
-	int state = static_cast<int>(st);
+	int state_int = static_cast<int>(st);
 	if(msg_send[0] == msg_send[2]) {
 		length = abs(msg_send[3] - msg_send[1]) + 1;
 	} else {
 		length = abs(msg_send[2] - msg_send[0]) + 1;
 	}
 
-	if(length != state)
+	if(length != state_int)
 		return 1;
 
 	
@@ -200,10 +206,60 @@ int check_length(char *msg_send)
 	return 0;
 }
 
+int check_crossing_and_back(const char *msg_send)
+{
+	int x, y;
+	Ship tmp_ship(msg_send);
+
+	tmp_ship.y1 < tmp_ship.y2 ? y = tmp_ship.y1 : y = tmp_ship.y2;
+	tmp_ship.x1 < tmp_ship.x2 ? x = tmp_ship.x1 : x = tmp_ship.x2;
+	if(tmp_ship.x1 == tmp_ship.x2) {
+		for(int i = 0; i < tmp_ship.size; i++) {
+			if(check_cell(tmp_ship.x1, y+i))
+				return 1;
+		}
+	} else {
+		for(int i = 0; i < tmp_ship.size; i++) {
+			if(check_cell(x+i, tmp_ship.y1))
+				return 1;
+		}
+	}
+	return 0;
+}
+
+int check_cell(int x, int y)
+{
+	for(int i = -1; i <= 1; i++) {
+		for(int j = -1; j <= 1; j++) {
+			if((x+i >= 0)&&(y+j >= 0)&&(x+i <= 9)&&(y+j <= 9)) {
+				if(field.f_info[x+i][y+j])
+					return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int check_length(const char *msg_send)
+{
+	int length;
+	int state_int = static_cast<int>(st);
+
+	if(msg_send[0] == msg_send[2]) {
+		length = abs(msg_send[3] - msg_send[1]) + 1;
+	} else {
+		length = abs(msg_send[2] - msg_send[0]) + 1;
+	}
+
+	if(length != state_int)
+		return 1;
+	return 0;
+}
+
 void handle_buf_servin(struct ships_num *ships, char *buf_for_servin)
 {
 	printf("servin\n");
-	if(buf_for_servin[0]) {
+	if(buf_for_servin[0] == '1') {
 		switch(st) {
 			case four:
 				ships->ships4++;
@@ -224,11 +280,12 @@ void handle_buf_servin(struct ships_num *ships, char *buf_for_servin)
 			case one:
 				ships->ships1++;
 				if(ships->ships1 == 4)
-					st = end;
+					st = waiting;
 			default:
 				break;
 		}
+	} else if(buf_for_servin[0] == '3') {
+		st = end;
 	}
-	//printf("Ship is installed\n");
 	field.field_print();
 }

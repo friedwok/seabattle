@@ -1,7 +1,7 @@
 #ifndef FILL_THE_FIELD_H_SENTRY
 #define FILL_THE_FIELD_H_SENTRY
 
-enum State { four = 4, three = 3, two = 2, one = 1, end = 0 };
+enum State { waiting = 5, four = 4, three = 3, two = 2, one = 1, end = 0 };
 
 void make_fleet(int ls);
 
@@ -17,6 +17,10 @@ void handle_buf_servin(struct ships_num *ships, char *buf_for_servin);
 
 int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_count, int sym_count);
 
-int check_length(char *msg_send);
+int check_length(const char *msg_send);
+
+int check_crossing_and_back(const char *msg_send);
+
+int check_cell(int x, int y);
 
 #endif

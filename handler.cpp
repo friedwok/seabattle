@@ -70,6 +70,7 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		tmp = new clients;;
 		tmp->player_num = field->players_connected;
 		tmp->dscr = dscr;
+		tmp->ships_count = 0;
 		tmp->my_field = new Field;
 		tmp->enemy_field = new Field;
 		tmp->next = NULL;
@@ -121,7 +122,9 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients 
 void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field)
 {
 	clients *tmp = field->head;
-	const char msg[128] = "1Ship is installed\n";
+	const char msg1[128] = "1Ship is installed\n";
+	//const char msg2[128] = "2Ship is installed\n";
+	//int all_ready = 0;
 
 	while(tmp->next->dscr != fd) {
 		if(tmp->next == NULL) {
@@ -132,5 +135,32 @@ void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field)
 	}
 	tmp->next->my_field->put_ship_to_field(tmp_buffer);
 	tmp->next->my_field->field_print();
-	write(fd, msg, sizeof(msg));
+	tmp->next->ships_count++;
+	if(tmp->next->ships_count <= 10) {
+		write(fd, msg1, sizeof(msg1));
+	}
+	if(tmp->next->ships_count == 10) {
+		tmp = field->head;
+		while(tmp->next != NULL) {
+			if(tmp->next->ships_count != 10)
+				break;
+			printf("zxc\n");
+			tmp = tmp->next;
+			if(tmp->next == NULL) {
+				game_started = 2;
+				players_ready(field);
+			}
+		}
+	}
+}
+
+void players_ready(struct field_info *field)
+{
+	clients *tmp = field->head;
+	const char msg[128] = "3All ready\n";
+
+	while(tmp->next != NULL) {
+		write(tmp->next->dscr, msg, sizeof(msg));
+		tmp = tmp->next;
+	}
 }

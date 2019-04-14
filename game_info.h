@@ -7,6 +7,7 @@ extern int game_started;
 typedef struct clientlist {
 	int dscr;
 	int player_num;
+	int ships_count;
 	Field *my_field;
 	Field *enemy_field;
 	struct clientlist *next;
