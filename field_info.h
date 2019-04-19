@@ -35,6 +35,9 @@ public:
 
 	Field();
 	void put_ship_to_field(const char *msg);
+	void hit(const char *msg, char *buf_to_send);
+	int check_ship_killed(int x, int y);
+	void remove_ship(Ships *ship_to_delete); 
 	void field_print();
 	~Field();
 };

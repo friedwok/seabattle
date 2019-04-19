@@ -14,4 +14,6 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients 
 void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field);
 
 void players_ready(struct field_info *field);
+
+void handle_hit(char *tmp_buffer, int rs, int fd, struct field_info *field);
 #endif

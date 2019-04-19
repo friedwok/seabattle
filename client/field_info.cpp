@@ -44,7 +44,17 @@ Field::~Field()
 		delete tmp;
 	}
 }
-
+/*
+void Field::hit(const char *msg_send, Field& f_info_enemy)
+{
+	x = msg_send[0] - 'A';
+	y = msg_send[1] - '0';
+	if(f_info_enemy[x][y] == 1) {
+		
+	}
+}
+*/
+//ship placement stage
 void Field::put_ship_to_field(const char *msg)
 {
 	Ships *ships_tmp = new Ships;

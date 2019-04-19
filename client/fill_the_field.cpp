@@ -24,7 +24,6 @@ State st = four;
 
 void make_fleet(int ls)
 {
-	//State st = four;
 	fd_set readfds;
 	int r = 0;
 	struct ships_num ships = { .ships4 = 0, .ships3 = 0, .ships2 = 0, .ships1 = 0 };
@@ -73,7 +72,11 @@ void print_invite()
 {
 	switch(st)
 	{
-		case four : printmsg(msg4, msg); break;
+		case four :
+			printmsg(msg4, msg);
+			printf(">");
+			fflush(stdout);
+			break;
 		case three : printmsg(msg3, ">"); break;
 		case two : printmsg(msg2, ">"); break;
 		case one : printmsg(msg1, ">"); break;
@@ -85,12 +88,12 @@ void print_invite()
 void printmsg(const char *msg1, const char *msg2)
 {
 	printf("%s%s", msg1, msg2);
+	fflush(stdout);
 }
 
 void remake_command(char *buffer, int size, int ls)
 {
 	int r;
-	printf(">");
 	r = read(0, buffer, size - 1);
 	if(r == -1) {
 		perror("read");
@@ -157,14 +160,15 @@ int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_cou
 		//remake_command(buf, size_buf, ls);
 		//return 1;
 	} else if((msg_send[0] != msg_send[2])&&(msg_send[1] != msg_send[3])) {
-		printf("The ship can only stand parallel to the axes");
-		//remake_command(buf, size_buf, ls);
-		//return 1;
-	} else if(check_length(msg_send)) {
+		printf("The ship can only stand parallel to the axes\n");
+	//} else if(check_symbols(msg_send)) {
+	} else if(Check::check_symbols(msg_send, 4)) {
+		printf("Invalid characters or sequences\n");
+	} else if(Check::check_length_f(msg_send)) {
 		printf("Wrong length\n");
 		//remake_command(buf, size_buf, ls);
 		//return 1;
-	} else if(check_crossing_and_back(msg_send)) {
+	} else if(Check::check_crossing_and_back_f(msg_send)) {
 		printf("The ship must not cross another or stay back to back\n");
 	} else {
 		k = 1;
@@ -177,8 +181,23 @@ int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_cou
 	}
 	return 0;
 }
+/*
+int check_symbols(const char *msg_send)
+{
+	for(int i = 0; i < 4; i++) {
+		if(i % 2 == 0) {
+			if((msg_send[i] < 'A')||(msg_send[i] > 'Z'))
+				return 1;
+		} else {
+			if((msg_send[i] < '0')||(msg_send[i] > '9'))
+				return 1;
+		}
+	}
 
-int check_length(char *msg_send)
+	return 0;
+}
+
+int check_length(const char *msg_send)
 {
 	int length;
 	int state_int = static_cast<int>(st);
@@ -191,18 +210,6 @@ int check_length(char *msg_send)
 	if(length != state_int)
 		return 1;
 
-	
-	/*switch(st) {
-		case four:
-			length == 4 ? break : return 1;
-		case three:
-			length == 3 ? break : return 1;
-		case two:
-			length == 2 ? break : return 1;
-		case one:
-			length == 1 ? break : return 1;
-			
-	}*/
 	return 0;
 }
 
@@ -239,7 +246,8 @@ int check_cell(int x, int y)
 	}
 	return 0;
 }
-
+*/
+/*
 int check_length(const char *msg_send)
 {
 	int length;
@@ -255,7 +263,7 @@ int check_length(const char *msg_send)
 		return 1;
 	return 0;
 }
-
+*/
 void handle_buf_servin(struct ships_num *ships, char *buf_for_servin)
 {
 	printf("servin\n");

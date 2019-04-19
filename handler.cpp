@@ -72,7 +72,7 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		tmp->dscr = dscr;
 		tmp->ships_count = 0;
 		tmp->my_field = new Field;
-		tmp->enemy_field = new Field;
+		//tmp->enemy_field = new Field;
 		tmp->next = NULL;
 		printf("plnum = %d\n", tmp->player_num);
 		(*last)->next = tmp;
@@ -114,7 +114,7 @@ void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients 
 
 	switch(game_started) {
 		case 1 : add_ship(tmp_buffer, rs, fd, field); break;
-		//case 2 : hit_the_ship(tmp_buffer, rs, fd, field); break;
+		case 2 : handle_hit(tmp_buffer, rs, fd, field); break;
 		default: break;
 	}
 }
@@ -160,7 +160,28 @@ void players_ready(struct field_info *field)
 	const char msg[128] = "3All ready\n";
 
 	while(tmp->next != NULL) {
+		printf("fdsend = %d\n", tmp->next->dscr);
 		write(tmp->next->dscr, msg, sizeof(msg));
 		tmp = tmp->next;
 	}
+	tmp = field->head;
+	tmp->next->enemy_field = tmp->next->next->my_field;
+	tmp->next->next->enemy_field = tmp->next->my_field;
+}
+
+void handle_hit(char *tmp_buffer, int rs, int fd, struct field_info *field)
+{
+	clients *tmp = field->head;
+	char buf_to_send[64];
+
+	while(tmp->next->dscr != fd) {
+		if(tmp->next == NULL) {
+			printf("No descriptor in list\n");
+			exit(0);
+		}
+		tmp = tmp->next;
+	}
+	tmp->next->enemy_field->hit(tmp_buffer, buf_to_send);
+	printf("bufsnd %s\n", buf_to_send);
+	write(fd, buf_to_send, sizeof(buf_to_send));
 }

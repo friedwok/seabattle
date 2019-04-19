@@ -17,6 +17,8 @@ void handle_buf_servin(struct ships_num *ships, char *buf_for_servin);
 
 int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_count, int sym_count);
 
+int check_symbols(const char *msg_send);
+
 int check_length(const char *msg_send);
 
 int check_crossing_and_back(const char *msg_send);

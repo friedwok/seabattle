@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 			}
 			field.players_connected++;
 			printf("prehan = %d\n", field.players_connected);
-			handle_accepted_player(head, &last, &field, dscr_came);
+ 			handle_accepted_player(head, &last, &field, dscr_came);
 		}
 
 		//now iterate through all client descriptors
