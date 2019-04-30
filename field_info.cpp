@@ -3,8 +3,6 @@
 #include<time.h>
 #include "field_info.h"
 
-//class Field;
-
 Ship::Ship(const char *msg)
 {
 	x1 = msg[0] - 'A';
@@ -78,7 +76,7 @@ void Field::hit(const char *msg, char *buf_to_send)
 	int x, y;
 	x = msg[0] - 'A';
 	y = msg[1] - '0';
-	if(f_info[x][y] == 1) {;
+	if(f_info[x][y] == 1) {
 		f_info[x][y] = 2;
 		int res = this->check_ship_killed(x, y);
 		if(!res) {
@@ -184,7 +182,6 @@ void Field::field_print()
 						str1[i] = '-';
 						str2[i] = ' ';
 						if((i - offset) % 4 == 2) {
-							//f_info[(i-offset)/4][j-1] == 1 ? str2[i] = '.' : str2[i] = ' ';
 							if(f_info[(i-offset)/4][j-1] == 2) {
 								str2[i] = 'x';
 							} else if(f_info[(i-offset)/4][j-1] == 1) {
@@ -204,7 +201,6 @@ void Field::field_print()
 					}
 					str1[i] = ' ';
 				}
-		
 			} else {
 				if(j > 0) {
 					if((i+2) % 4 == 0) {
@@ -218,10 +214,6 @@ void Field::field_print()
 					str1[i] = ' ';
 					str2[i] = ' ';
 				}
-				//if(j == 10) {
-				//	str2[1] = '1';
-				//	str2[2] = '0';
-				//}
 			}
 		}
 		printf("%s\n", str1);

@@ -6,6 +6,8 @@
 #include "field_info.h"
 #include "fill_the_field.h"
 
+//#include<ctime>
+//#include<fcntl.h>
 struct ships_num {
 	int ships4;
 	int ships3;
@@ -62,7 +64,7 @@ void make_fleet(int ls)
 				printf("Server crashed\n");
 				exit(0);
 			}
-			printf("%s", buf_for_servin + 1);
+			//printf("%s", buf_for_servin + 1);
 			handle_buf_servin(&ships, buf_for_servin);
 		}
 	}

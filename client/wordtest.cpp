@@ -3,6 +3,7 @@
 #include<cctype>
 #include "wordtest.h"
 #include "fill_the_field.h"
+//#include "testfill.h"
 #include "field_info.h"
 
 extern State st;
@@ -19,6 +20,9 @@ int Check::words_count(const char *buf, const int size)
 			fl = 1;
 		} else if(std::isspace(buf[i])) {
 			fl = 0;
+		}
+		if(buf[i] == 0) {
+			break;
 		}
 	}
 

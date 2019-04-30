@@ -27,6 +27,7 @@ void pre_game(int ls, int *pl_num, int *fl)
 	fd_set readfds;
 	int buf[2], pl_num_flag = 0;
 
+
 	while(!(*fl)) {
 		FD_ZERO(&readfds);
 		FD_SET(0, &readfds);
@@ -34,11 +35,11 @@ void pre_game(int ls, int *pl_num, int *fl)
 		select(ls+1, &readfds, NULL, NULL, NULL);
 		if(FD_ISSET(ls, &readfds)) {
 			rs = read(ls, buf, sizeof(buf));
-			printf("readzc\n");
 			if(rs == -1) {
 				perror("read");
 				exit(1);
 			}
+			
 			check_buf(buf, fl, pl_num, &pl_num_flag);
 		}
 	}

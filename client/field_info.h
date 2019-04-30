@@ -38,10 +38,13 @@ public:
 	Field();
 	void put_ship_to_field(const char *msg);
 	void field_print();
+	void field_enemy_print();
 	void hit(const char *msg, char *buf_to_send);
 	int check_ship_killed(int x, int y);
 	friend int check_cell(int, int);
-	friend void handle_hit(const char *buf);
+	friend int check_msg(char *buf, int size_buf, char *msg_send, int ls, int words_count, int sym_count);
+	friend void handle_my_hit(const char *buf);
+	friend void handle_enemy_hit(const char *buf);
 	friend class Check;
 	~Field();
 };

@@ -44,16 +44,7 @@ Field::~Field()
 		delete tmp;
 	}
 }
-/*
-void Field::hit(const char *msg_send, Field& f_info_enemy)
-{
-	x = msg_send[0] - 'A';
-	y = msg_send[1] - '0';
-	if(f_info_enemy[x][y] == 1) {
-		
-	}
-}
-*/
+
 //ship placement stage
 void Field::put_ship_to_field(const char *msg)
 {
@@ -88,7 +79,7 @@ void Field::field_print()
 	char *str1, *str2;
 	const int offset = 4;
 
-	srand(time(NULL));
+	//srand(time(NULL));
 	str1 = new char[offset + 41];
 	str2 = new char[offset + 41];
 	str1[offset + 40] = 0;
@@ -104,7 +95,16 @@ void Field::field_print()
 						str1[i] = '-';
 						str2[i] = ' ';
 						if((i - offset) % 4 == 2) {
-							f_info[(i-offset)/4][j-1] == 1 ? str2[i] = '.' : str2[i] = ' ';
+							//f_info[(i-offset)/4][j-1] == 1 ? str2[i] = '.' : str2[i] = ' ';
+							if(f_info[(i-offset)/4][j-1] == 1) {
+								str2[i] = '.';
+							} else if(f_info[(i-offset)/4][j-1] == 2) {
+								str2[i] = '#';
+							} else if(f_info[(i-offset)/4][j-1] == 3) {
+								str2[i] = 'x';
+							} else {
+								str2[i] = ' ';
+							}
 						}
 					}
 				} else {
@@ -131,10 +131,67 @@ void Field::field_print()
 					str1[i] = ' ';
 					str2[i] = ' ';
 				}
-				//if(j == 10) {
-				//	str2[1] = '1';
-				//	str2[2] = '0';
-				//}
+			}
+		}
+		printf("%s\n", str1);
+		printf("%s\n", str2);
+	}
+	printf("%s\n", str1);
+}
+
+void Field::field_enemy_print()
+{
+	char *str1, *str2;
+	const int offset = 4;
+
+	str1 = new char[offset + 41];
+	str2 = new char[offset + 41];
+	str1[offset + 40] = 0;
+	str2[offset + 40] = 0;
+	for(int j = 0; j < 11; j++) {
+		for(int i = 0; i < offset + 41; i++) {
+			if(i >= offset) {
+				if(j > 0) {
+					if(i % 4 == 0) {
+						str1[i] = '+';
+						str2[i] = '|';
+					} else {
+						str1[i] = '-';
+						str2[i] = ' ';
+						if((i - offset) % 4 == 2) {
+							//f_info[(i-offset)/4][j-1] == 1 ? str2[i] = 'x' : str2[i] = ' ';
+							if(f_info[(i-offset)/4][j-1] == 1) {
+								str2[i] = 'x';
+							} else if(f_info[(i-offset)/4][j-1] == 2) {
+								str2[i] = '#';
+							} else {
+								str2[i] = ' ';
+							}
+						}
+					}
+				} else {
+					if((i-2) % 4 == 0) {
+						str2[i] = 'A' + (i-2)/4 - 1;
+					} else if(i % 4 == 0) {
+						str2[i] = '|';
+					} else {
+						str2[i] = ' ';
+					}
+					str1[i] = ' ';
+				}
+			} else {
+				if(j > 0) {
+					if((i+2) % 4 == 0) {
+						str1[i] = '-';
+						str2[i] = '0' + j - 1;
+					} else {
+						str1[i] = '-';
+						str2[i] = ' ';
+					}
+				} else {
+					str1[i] = ' ';
+					str2[i] = ' ';
+				}
 			}
 		}
 		printf("%s\n", str1);

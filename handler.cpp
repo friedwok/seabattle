@@ -16,7 +16,7 @@ void notify_players_about_disconnect(struct field_info *field, clients *disc_pl)
 	clients *tmp = field->head;
 	int buf[2];
 
-	printf("con = %d\n", field->players_connected);
+	printf("connected = %d\n", field->players_connected);
 	if(field->players_connected == 0) {
 		printf("All disconnected\n");
 		return;
@@ -42,7 +42,6 @@ void alarm_players(struct field_info *field)
 	while(tmp->next != NULL) {
 		write(tmp->next->dscr, buf, sizeof(buf));
 		tmp = tmp->next;
-		printf("alarm\n");
 	}
 	//printf("alarm\n");
 }
@@ -50,7 +49,6 @@ void alarm_players(struct field_info *field)
 
 void handle_accepted_player(clients *head, clients **last, struct field_info *field, int dscr)
 {
-	printf("zxcsa\n");
 	int buf[2];
 	clients *tmp;
 	//const char *message1 = "The game has not started yet\n";
@@ -58,7 +56,6 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 	if(field->players_connected == field->players_count) {
 			game_started = 1;
 	}
-	printf("jopf\n");
 	if(field->players_connected > field->players_count) {
 		buf[0] = field->players_connected;
 		buf[1] = field->players_count;
@@ -72,9 +69,8 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 		tmp->dscr = dscr;
 		tmp->ships_count = 0;
 		tmp->my_field = new Field;
-		//tmp->enemy_field = new Field;
 		tmp->next = NULL;
-		printf("plnum = %d\n", tmp->player_num);
+		//printf("plnum = %d\n", tmp->player_num);
 		(*last)->next = tmp;
 		(*last) = (*last)->next;
 		alarm_players(field);
@@ -82,13 +78,9 @@ void handle_accepted_player(clients *head, clients **last, struct field_info *fi
 
 	tmp = head;
 	while(tmp->next != NULL) {
-		printf("ds_connected = %d\n", tmp->next->dscr);
+		//printf("ds_connected = %d\n", tmp->next->dscr);
 		tmp = tmp->next;
 	}
-	//if(!game_started) {
-	//	write(dscr, message1, strlen(message1)+1);
-	//	return;
-	//}
 }
 
 void handle(char *tmp_buffer, int rs, int fd, struct field_info *field, clients **last)
@@ -123,8 +115,6 @@ void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field)
 {
 	clients *tmp = field->head;
 	const char msg1[128] = "1Ship is installed\n";
-	//const char msg2[128] = "2Ship is installed\n";
-	//int all_ready = 0;
 
 	while(tmp->next->dscr != fd) {
 		if(tmp->next == NULL) {
@@ -144,7 +134,6 @@ void add_ship(char *tmp_buffer, int rs, int fd, struct field_info *field)
 		while(tmp->next != NULL) {
 			if(tmp->next->ships_count != 10)
 				break;
-			printf("zxc\n");
 			tmp = tmp->next;
 			if(tmp->next == NULL) {
 				game_started = 2;
@@ -160,7 +149,7 @@ void players_ready(struct field_info *field)
 	const char msg[128] = "3All ready\n";
 
 	while(tmp->next != NULL) {
-		printf("fdsend = %d\n", tmp->next->dscr);
+		//printf("fdsend = %d\n", tmp->next->dscr);
 		write(tmp->next->dscr, msg, sizeof(msg));
 		tmp = tmp->next;
 	}
@@ -182,6 +171,10 @@ void handle_hit(char *tmp_buffer, int rs, int fd, struct field_info *field)
 		tmp = tmp->next;
 	}
 	tmp->next->enemy_field->hit(tmp_buffer, buf_to_send);
-	printf("bufsnd %s\n", buf_to_send);
-	write(fd, buf_to_send, sizeof(buf_to_send));
+	//printf("bufsnd %d %c %c\n", buf_to_send[0], buf_to_send[1], buf_to_send[2]);
+	tmp = field->head;
+	while(tmp->next != NULL) {
+		write(tmp->next->dscr, buf_to_send, sizeof(buf_to_send));
+		tmp = tmp->next;
+	}
 }
