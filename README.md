@@ -3,10 +3,18 @@ console game sea battle
 
 To build and run program:
 
-In folder 'client':
+**In folder 'client':**
 
 cmake .
 
 make
 
 ./client {OPTIONS}
+
+**In folder 'server'**
+
+cmake .
+
+make
+
+./server {OPTIONS}
