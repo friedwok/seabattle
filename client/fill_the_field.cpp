@@ -6,8 +6,6 @@
 #include "field_info.h"
 #include "fill_the_field.h"
 
-//#include<ctime>
-//#include<fcntl.h>
 struct ships_num {
 	int ships4;
 	int ships3;
@@ -44,7 +42,6 @@ void make_fleet(int ls)
 				perror("read");
 				exit(1);
 			}
-			printf("r = %d\n", r);
 			buf_for_stdin[r] = 0;
 			if(st != waiting) {
 				make_command_to_send(buf_for_stdin, sizeof(buf_for_stdin), ls);
@@ -64,7 +61,6 @@ void make_fleet(int ls)
 				printf("Server crashed\n");
 				exit(0);
 			}
-			//printf("%s", buf_for_servin + 1);
 			handle_buf_servin(&ships, buf_for_servin);
 		}
 	}
@@ -121,7 +117,7 @@ void make_command_to_send(char *buf, int size, int ls)
 
 		if(!std::isspace(buf[i])) {
 			msg_send[sym_count] = buf[i];
-			printf("%c\n", buf[i]);
+			//printf("%c\n", buf[i]);
 			if(msg_send[sym_count] == 0)
 				break;
 			sym_count++;
@@ -133,19 +129,6 @@ void make_command_to_send(char *buf, int size, int ls)
 		}
 	}
 
-	printf("msgsend = %s\n", msg_send);
-	/*if((words_count != 2)||(sym_count != 4)) {
-		printf("Invalid command\n");
-		remake_command(buf, size, ls);
-		return;
-	} else if((msg_send[0] != msg_send[2])&&(msg_send[1] != msg_send[3])) {
-		printf("The ship can only stand parallel to the axes\n");
-		remake_command(buf, size, ls);
-	//} else if(check_other)) { length, crossing, back to back
-	} else {
-		field.put_ship_to_field(msg_send); 
-		write(ls, msg_send, sizeof(msg_send));
-	}*/
 	if(check_message(buf, size, msg_send, ls, words_count, sym_count)) {
 		return;
 	} else {
@@ -159,17 +142,12 @@ int check_message(char *buf, int size_buf, char *msg_send, int ls, int words_cou
 	int k = 0;
 	if((words_count != 2)||(sym_count != 4)) {
 		printf("Invalid command\n");
-		//remake_command(buf, size_buf, ls);
-		//return 1;
 	} else if((msg_send[0] != msg_send[2])&&(msg_send[1] != msg_send[3])) {
 		printf("The ship can only stand parallel to the axes\n");
-	//} else if(check_symbols(msg_send)) {
 	} else if(Check::check_symbols(msg_send, 4)) {
 		printf("Invalid characters or sequences\n");
 	} else if(Check::check_length_f(msg_send)) {
 		printf("Wrong length\n");
-		//remake_command(buf, size_buf, ls);
-		//return 1;
 	} else if(Check::check_crossing_and_back_f(msg_send)) {
 		printf("The ship must not cross another or stay back to back\n");
 	} else {
@@ -268,7 +246,6 @@ int check_length(const char *msg_send)
 */
 void handle_buf_servin(struct ships_num *ships, char *buf_for_servin)
 {
-	printf("servin\n");
 	if(buf_for_servin[0] == '1') {
 		switch(st) {
 			case four:
